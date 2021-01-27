@@ -71,7 +71,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(('8.8.8.8', 1))
 ip = s.getsockname()[0]
 port = 1337
-print("IP= "+ip+":"+str(port))
+print("IP= "+ip+":"+str(8089))
 
-server = BlockingOSCUDPServer((ip, port), dispatcher)
+server = BlockingOSCUDPServer(('127.0.0.1', port), dispatcher)
 server.serve_forever()  # Blocks forever
