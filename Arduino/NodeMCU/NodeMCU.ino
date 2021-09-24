@@ -208,14 +208,14 @@ int som(){
           
       falhou=true;
       Udp.beginPacket(outIp, outPort);
-      OSCMessage msg("/1/falhou");
+      OSCMessage msg("/falhou");
       float f=1;
       msg.add(f);
       msg.send(Udp);
       Udp.endPacket();
       msg.empty();
       delay(120);
-      OSCMessage msg2("/1/falhou");
+      OSCMessage msg2("/falhou");
       f=0;
       msg2.add(f);
       Udp.beginPacket(outIp, outPort);
@@ -231,14 +231,14 @@ int som(){
     }while((millis()-tinicial)<tempo);
     if(!falhou){
       {Udp.beginPacket(outIp, outPort);
-      OSCMessage msg("/1/beep");
+      OSCMessage msg("/beep");
       float f=1;
       msg.add(f);
       msg.send(Udp);
       Udp.endPacket();
       msg.empty();
       delay(120);
-      OSCMessage msg2("/1/beep");
+      OSCMessage msg2("/beep");
       f=0;
       msg2.add(f);
       Udp.beginPacket(outIp, outPort);

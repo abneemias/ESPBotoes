@@ -3,7 +3,10 @@ from pythonosc.osc_server import BlockingOSCUDPServer
 import vlc
 import time
 import socket
+import winsound 
 
+#caso nao use o PureData mudar porta para 8089
+port = 1337
 
 media_player = vlc.MediaListPlayer() 
   
@@ -13,16 +16,14 @@ media_list = player.media_list_new()
   
 media = player.media_new("Amarelo.mp4") 
 media2 = player.media_new("Azul.mp4") 
-media3 = player.media_new("certa.mp4") 
-media4 = player.media_new("errada.mp4") 
+media3 = player.media_new("falhou.mp4")  
 
 
 
   
 media_list.add_media(media) 
 media_list.add_media(media2)
-media_list.add_media(media3) 
-media_list.add_media(media4)
+media_list.add_media(media3)
  
 
   
@@ -48,29 +49,22 @@ def print_push1(address, *args):
     if args[0] > 0 :
         media_player.play_item_at_index(2) 
         time.sleep(7.4)
-        media_player.set_pause(1)
-        
-def print_push2(address, *args):    
+        media_player.set_pause(1)  
+
+def apito(address, *args):
     if args[0] > 0 :
-        media_player.play_item_at_index(3) 
-        time.sleep(7.4)
-        media_player.set_pause(1)
-        
-        
-        
+        winsound.Beep(1000, 750) 
         
 dispatcher = Dispatcher()
 dispatcher.map("/vermelho", print_push3)
 dispatcher.map("/azul", print_push4)
-dispatcher.map("/certa", print_push1)
-dispatcher.map("/errada", print_push2)
-
+dispatcher.map("/falhou", print_push1)
+dispatcher.map("/beep", apito)
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(('8.8.8.8', 1))
 ip = s.getsockname()[0]
-port = 1337
 print("IP= "+ip+":"+str(8089))
 
 server = BlockingOSCUDPServer(('127.0.0.1', port), dispatcher)
