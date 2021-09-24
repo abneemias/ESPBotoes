@@ -60,10 +60,10 @@ def print_push2(address, *args):
         
         
 dispatcher = Dispatcher()
-dispatcher.map("/1/push3", print_push3)
-dispatcher.map("/1/push4", print_push4)
-dispatcher.map("/1/push1", print_push1)
-dispatcher.map("/1/push2", print_push2)
+dispatcher.map("/vermelho", print_push3)
+dispatcher.map("/azul", print_push4)
+dispatcher.map("/certa", print_push1)
+dispatcher.map("/errada", print_push2)
 
 
 
