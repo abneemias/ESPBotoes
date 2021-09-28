@@ -391,7 +391,195 @@ int som(){
 }
 
 int crono(){
+  while(1){
+  int tempo = random(7,20);
+  bool apressionado=false, vpressionado=false;
+  tempo=1000*tempo;
+  digitalWrite(D2,LOW);
+  digitalWrite(D5,LOW);
+  {
+  Udp.beginPacket(outIp, outPort);
+  OSCMessage msg("/contagem");
+  float f=tempo/1000;
+  msg.add(f);
+  msg.send(Udp);
+  Udp.endPacket();
+  msg.empty();
+  }
+    {
+  Udp.beginPacket(outIp, outPort);
+  OSCMessage msg("/tvermelho");
+  float f=0;
+  msg.add(f);
+  msg.send(Udp);
+  Udp.endPacket();
+  msg.empty();
+  }
+   {
+  Udp.beginPacket(outIp, outPort);
+  OSCMessage msg("/tazul");
+  float f=0;
+  msg.add(f);
+  msg.send(Udp);
+  Udp.endPacket();
+  msg.empty();
+  }
+
+  
+  Serial.println("Enviando");
+  int j=0;
+  for(j=0;j<5;j++){
+  {
+  Udp.beginPacket(outIp, outPort);
+  OSCMessage msg("/brilho");
+  float f=255.0;
+  msg.add(f);
+  msg.send(Udp);
+  Udp.endPacket();
+  msg.empty();
+  }
+  delay(500);
+  {
+  Udp.beginPacket(outIp, outPort);
+  OSCMessage msg("/brilho");
+  float f=0.0;
+  msg.add(f);
+  msg.send(Udp);
+  Udp.endPacket();
+  msg.empty();
+  }
+  delay(500);
+  }
   delay(1000);
+  long tinicial=millis();
+  long vtempo, atempo;
+  long resetsegundos=millis();
+  int showsegundos=0;
+  float brilho=0.0;
+  Udp.beginPacket(outIp, outPort);
+  OSCMessage msg("/contagem");
+  float f=float(showsegundos++);
+  msg.add(f);
+  msg.send(Udp);
+  Udp.endPacket();
+  msg.empty();
+  do{
+  if(millis()-resetsegundos>1000){
+  Udp.beginPacket(outIp, outPort);
+  OSCMessage msg("/contagem");
+  float f=float(showsegundos++);
+  msg.add(f);
+  msg.send(Udp);
+  Udp.endPacket();
+  msg.empty();
+  resetsegundos=millis();
+  }else{
+    Udp.beginPacket(outIp, outPort);
+    OSCMessage msg("/brilho");
+    if(brilho<1){
+    brilho=brilho+0.05;
+      if(brilho>1) brilho =1;
+    }
+    float f=brilho;
+    msg.add(f);
+    msg.send(Udp);
+    Udp.endPacket();
+    msg.empty();
+  }
+  delay(200);
+  }while((millis()-tinicial)<6000);
+  do{
+    if(!vpressionado && digitalRead(D0)==HIGH){
+      vtempo = millis();
+      vpressionado=true;
+    }
+    if(!apressionado && digitalRead(D8)==HIGH){
+      atempo = millis();
+      apressionado=true;
+    }
+    delay(50);
+  }while(!vpressionado || !apressionado);
+  {
+  Udp.beginPacket(outIp, outPort);
+  OSCMessage msg("/tvermelho");
+  float f=(vtempo-tinicial);
+  msg.add(f/1000);
+  msg.send(Udp);
+  Udp.endPacket();
+  msg.empty();
+  }
+   {
+  Udp.beginPacket(outIp, outPort);
+  OSCMessage msg("/tazul");
+  float f=(atempo-tinicial);
+  msg.add(f/1000);
+  msg.send(Udp);
+  Udp.endPacket();
+  msg.empty();
+  }
+
+  if(abs(tempo - (atempo-tinicial)) > abs(tempo - (vtempo-tinicial))){
+      digitalWrite(D2,HIGH);
+      Udp.beginPacket(outIp, outPort);
+      OSCMessage msg("/vermelho");
+      float f=1;
+      msg.add(f);
+      msg.send(Udp);
+      Udp.endPacket();
+      msg.empty();
+      delay(120);
+      OSCMessage msg2("/vermelho");
+      f=0;
+      msg2.add(f);
+      Udp.beginPacket(outIp, outPort);
+      msg2.send(Udp);
+      Udp.endPacket();
+      delay(100);
+      msg2.empty();
+  }else{
+      digitalWrite(D5,HIGH);
+      Udp.beginPacket(outIp, outPort);
+      OSCMessage msg("/azul");
+      float f=1;
+      msg.add(f);
+      msg.send(Udp);
+      Udp.endPacket();
+      msg.empty();
+      delay(120);
+      OSCMessage msg2("/azul");
+      f=0;
+      msg2.add(f);
+      Udp.beginPacket(outIp, outPort);
+      msg2.send(Udp);
+      Udp.endPacket();
+      delay(100);
+      msg2.empty();  
+  }     
+      
+//reset
+      Udp.flush();    
+    
+      while(digitalRead(D1) == LOW && !autoriza){
+      Serial.println("Esperando Reset");
+      OSCMessage msg;
+      int size = Udp.parsePacket();
+      
+       if (size > 0) {
+        while (size--) {
+          msg.fill(Udp.read());
+        }
+        if (!msg.hasError()) {
+          msg.dispatch("/certa", certa);
+          msg.dispatch("/errada", errada);
+        } else {
+          error = msg.getError();
+          Serial.print("error: ");
+          Serial.println(error);
+        }
+      }
+    delay(50);
+    }
+  }
 }
 
 
