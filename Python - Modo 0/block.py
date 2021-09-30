@@ -14,16 +14,16 @@ port = 1337
 
   
 class App(threading.Thread):
-
     def __init__(self):
         threading.Thread.__init__(self)
         self.start()
 
     def callback(self):
-        funcionando = False
+        self.funcionando = False
         self.root.quit()
 
     def run(self):
+        self.funcionando = True
         self.root = Tk()
         self.root.title("Output")
         self.root.geometry('1280x720')
@@ -60,8 +60,12 @@ class App(threading.Thread):
         self.media_player.set_pause(1)
         self.frame.pack_forget()
         self.croma.pack()
-        
+    
+    def statuss(self):
+        return self.funcionando
+    
 app = App()
+Funcionando = True
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(('8.8.8.8', 1))
 ip = s.getsockname()[0]
@@ -105,8 +109,8 @@ dispatcher.map("/errada", errada)
 dispatcher.set_default_handler(default_handler)
 
 async def loop():
-    while(funcionando):
-        print(".")
+    while(app.statuss()):
+        print("...")
         await asyncio.sleep(1)
 
 

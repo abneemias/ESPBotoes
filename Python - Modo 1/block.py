@@ -8,8 +8,6 @@ import winsound
 import vlc
 import time
 import socket
-
-funcionando = True
   
 port = 1337 #use porta 8089 caso nao use o PureData para luzes DMX
   
@@ -20,11 +18,12 @@ class App(threading.Thread):
         self.start()
 
     def callback(self):
-        funcionando = False
+        self.funcionando = False
         self.root.quit()
 
     def run(self):
         self.root = Tk()
+        self.funcionando = True
         self.root.title("Output")
         self.root.geometry('1280x720')
         self.root.configure(background='#00ff00')
@@ -59,6 +58,9 @@ class App(threading.Thread):
         self.media_player.set_pause(1)
         self.frame.pack_forget()
         self.croma.pack()
+    
+    def statuss(self):
+        return self.funcionando
         
 app = App()
 
@@ -103,7 +105,7 @@ dispatcher.map("/beep", apito)
 dispatcher.set_default_handler(default_handler)
 
 async def loop():
-    while(funcionando):
+    while(app.statuss()):
         print(".")
         await asyncio.sleep(1)
 

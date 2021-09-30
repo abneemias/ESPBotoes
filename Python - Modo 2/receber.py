@@ -76,6 +76,10 @@ class App(threading.Thread):
         self.croma.winfo_children()[1].config(text=("vermelho="+str(("%.2f" % nome))))       
     def amudar(self,nome):
         self.croma.winfo_children()[2].config(text=("azul="+str(("%.2f" % nome))))
+    
+    def statuss(self):
+        return self.funcionando
+    
 
 
 app = App()
@@ -154,13 +158,9 @@ dispatcher.map("/vermelho*",vvermelho)
 dispatcher.set_default_handler(default_handler)
 
 async def loop():
-    """Example main loop that only runs for 10 iterations before finishing"""
-    i=0
-    while(funcionando):
-        print(f"Loop {i}")
-        i=i+1
+    while(app.statuss()):
+        print(".")
         await asyncio.sleep(1)
-
 
 async def init_main():
     server = AsyncIOOSCUDPServer((ip, port), dispatcher, asyncio.get_event_loop())
